@@ -1,27 +1,17 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
-import CreateUser from 'App/Validators/CreateUserValidator'
-import CreateAddress from 'App/Validators/CreateAddressValidator'
-import Address from 'App/Models/Address'
+import CreateUser from 'App/Validators/User/CreateUserValidator'
+import CreateAddress from 'App/Validators/User/Address/CreateAddressValidator'
 
 export default class AuthController {
   public async signup({ request, response }: HttpContextContract) {
 
     try {
-      console.log(1)
       const payloadUser = await request.validate(CreateUser)
-      console.log(2)
-      const { haveAddress } = request.body()
-      console.log(3)
+      const payloadAddress = await request.validate(CreateAddress)
 
       const user = await User.create(payloadUser)
-
-      if(haveAddress) {
-        console.log('if')
-        const payloadAddress = await request.validate(CreateAddress)
-        await Address.create({ id: user.id, ...payloadAddress })
-      }
-      
+      await user.related('address').create(payloadAddress)
       await user.load('address')
 
       return response.created(user)
@@ -39,7 +29,7 @@ export default class AuthController {
         expiresIn: '7days'
       })
 
-      return response.ok({user, token})
+      return response.ok({ user, token })
     } catch (error) {
       return response.internalServerError(error)
     }

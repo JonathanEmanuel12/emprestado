@@ -1,4 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import UpdateUser from 'App/Validators/User/UpdateUserValidator'
+import UpdateAddress from 'App/Validators/User/Address/UpdateAddressValidator'
 import User from 'App/Models/User'
 
 export default class UsersController {
@@ -28,20 +30,30 @@ export default class UsersController {
         }
     }
 
-    // public async update({ request, auth, response }: HttpContextContract) {
+    public async update({ params, request, auth, response }: HttpContextContract) {
+        const { id } = params
+        const loggedUser = await auth.authenticate()
+        try {
+            const payloadUser = await request.validate(UpdateUser)
+            const payloadAddress = await request.validate(UpdateAddress)
 
-    //     try {
-    //         const { email, password } = request.body()
-    //         const user = await User.findByOrFail('email', email)
-    //         const token = await auth.attempt(email, password, {
-    //             expiresIn: '7days'
-    //         })
+            if(id !== loggedUser) {
+                response.forbidden('Alteração não permitida')
+            }
 
-    //         return response.ok({ user, token })
-    //     } catch (error) {
-    //         return response.internalServerError(error)
-    //     }
-    // }
+            const user = await User.findOrFail(id)
+            user.merge(payloadUser)
+            await user.save
+
+            const address = await user.related('address').query().firstOrFail()
+            address.merge(payloadAddress)
+            await address.save()
+
+            return response.ok({ user })
+        } catch (error) {
+            return response.internalServerError(error)
+        }
+    }
 
     public async destroy({ params, response }: HttpContextContract) {
         const { id } = params
