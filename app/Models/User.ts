@@ -1,9 +1,13 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave } from '@ioc:Adonis/Lucid/Orm'
+import { column, beforeSave, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
 import UuidBase from './Base/UuidBase'
+import Address from './Address'
 
 export default class User extends UuidBase {
+  @column()
+  public name: string
+  
   @column()
   public email: string
 
@@ -11,7 +15,10 @@ export default class User extends UuidBase {
   public password: string
 
   @column()
-  public rememberMeToken?: string
+  public phone: string
+
+  @hasOne(() => Address)    
+  public address: HasOne<typeof Address>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

@@ -3,8 +3,8 @@
 printf "\n\n\nNpm install:"
 npm install
 
-printf "\n\n\nRollback migration:\n"
-node ace migration:rollback
+# printf "\n\n\nRollback migration:\n"
+# node ace migration:rollback
 
 printf "\n\n\nRun migration:\n"
 node ace migration:run

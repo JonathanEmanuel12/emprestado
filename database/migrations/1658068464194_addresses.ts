@@ -11,14 +11,15 @@ export default class extends BaseSchema {
       table.string('country').notNullable()
       table.string('state').notNullable()
       table.string('city').notNullable()
+      table.string('neighborhood').notNullable()
       table.string('street').notNullable()
       table.string('number').notNullable()
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
-      table.timestamp('created_at', { useTz: true })
-      table.timestamp('updated_at', { useTz: true })
+      table.timestamp('created_at', { useTz: true }).notNullable()
+      table.timestamp('updated_at', { useTz: true }).notNullable()
     })
   }
 
