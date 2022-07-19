@@ -20,8 +20,9 @@ export default class AuthController {
         console.log('if')
         const payloadAddress = await request.validate(CreateAddress)
         await Address.create({ id: user.id, ...payloadAddress })
-        await user.load('address')
       }
+      
+      await user.load('address')
 
       return response.created(user)
     } catch (error) {

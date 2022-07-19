@@ -24,6 +24,9 @@ export default class Address extends UuidBase {
 
   @column()
   public number: string
+  
+  @column()
+  public userId: string
 
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
