@@ -22,6 +22,7 @@ export default class UsersController {
         const { id } = params
         try {
             const user = await User.findOrFail(id)
+            await user.load('address')
 
             return response.ok({ user })
         } catch (error) {
@@ -41,9 +42,11 @@ export default class UsersController {
                 response.forbidden('Alteração não permitida')
             }
 
+            console.log(payloadUser)
+
             const user = await User.findOrFail(id)
             user.merge(payloadUser)
-            await user.save
+            await user.save()
 
             const address = await user.related('address').query().firstOrFail()
             address.merge(payloadAddress)
@@ -51,7 +54,8 @@ export default class UsersController {
 
             return response.ok({ user })
         } catch (error) {
-            return response.internalServerError(error)
+            console.log(error)
+            return response.internalServerError(error.message)  
         }
     }
 
