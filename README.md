@@ -15,7 +15,7 @@ Dependendo da minha coragem, será adicionada a funcionalidade de ver todos os i
 ##### Docker
 - Docker-compose
 
-####Instruções para rodar o projeto
+#### Instruções para rodar o projeto
 
 1. Criar um arquivo .env na raiz do projeto
 2. Copiar o que está no .env.example para o .env
