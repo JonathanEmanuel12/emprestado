@@ -38,8 +38,8 @@ export default class UsersController {
             const payloadUser = await request.validate(UpdateUser)
             const payloadAddress = await request.validate(UpdateAddress)
 
-            if(id !== loggedUser) {
-                response.forbidden('Alteração não permitida')
+            if(id !== loggedUser.id) {
+                return response.forbidden('Alteração não permitida')
             }
 
             console.log(payloadUser)
@@ -59,9 +59,14 @@ export default class UsersController {
         }
     }
 
-    public async destroy({ params, response }: HttpContextContract) {
+    public async destroy({ params, auth, response }: HttpContextContract) {
         const { id } = params
+        const loggedUser = await auth.authenticate()
         try {
+            if(id !== loggedUser.id) {
+                return response.forbidden('Alteração não permitida')
+            }
+
             const user = await User.findOrFail(id)
             await user.delete()
 
