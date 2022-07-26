@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import CreateItem from 'App/Validators/User/Item/CreateItemValidator'
+import UpdateItem from 'App/Validators/User/Item/UpdateItemValidator'
 import Item from 'App/Models/Item'
 import User from 'App/Models/User'
 
@@ -43,6 +44,27 @@ export default class ItemsController {
         } catch (error) {
             console.log(error)
             return response.internalServerError(error.message)
+        }
+    }
+
+    public async update({ params, request, auth, response }: HttpContextContract) {
+        const { id } = params
+        const loggedUser = await auth.authenticate()
+        try {
+            const payloadItem = await request.validate(UpdateItem)
+            const item = await Item.findOrFail(id)
+
+            if(item.userId !== loggedUser.id) {
+                return response.forbidden('Alteração não permitida')
+            }
+
+            item.merge(payloadItem)
+            await item.save()
+
+            return response.ok({ item })
+        } catch (error) {
+            console.log(error)
+            return response.internalServerError(error.message)  
         }
     }
 
